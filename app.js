@@ -11,7 +11,7 @@ app.get('/*', function (req, res) {
 
 app.listen(port, function (err) {
   if (!err) {
-    console.log('Server listening on port ' + port)
+    console.log('Server listening on port: ' + port)
   } else {
     console.log('Error starting server: ', err)
   }
