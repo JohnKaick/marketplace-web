@@ -1,39 +1,13 @@
 import React from 'react';
 import { Card, Icon, Image, Button, Container, Header, List } from 'semantic-ui-react';
-import { create, getAll, remover } from './api'
+import { withRouter } from 'react-router-dom'
+import { create, getAll, remover } from '../app/api'
 
+import { mercado } from './produtos';
+import imgCapa from '../img/capa.jpg';
 import imgAgua from '../img/agua.jpeg';
 import imgMaca from '../img/maca.jpeg';
 import imgSabonete from '../img/sabonete.jpg';
-import imgCapa from '../img/capa.jpg';
-
-const produtos = [
-    {
-        'id': 1,
-        'nome': 'Água mineral',
-        'descricao': 'Garrafa Água Mineral 500 ml',
-        'valor': 1,
-        'quantidade': 1,
-        'imagem': imgAgua
-    },
-    {
-        'id': 2,
-        'nome': 'Maça',
-        'descricao': 'A maçã é rica em fibras, vitaminas B1, B2 e sais minerais (fósforo e ferro).',
-        'valor': 2,
-        'quantidade': 1,
-        'imagem': imgMaca
-    },
-    {
-        'id': 3,
-        'nome': 'Sabonete Dove',
-        'descricao': 'Sabonete Dove Original possui creme hidratante que não agride a pele, suaviza as linhas finas de expressão do rosto.',
-        'valor': 3,
-        'quantidade': 1,
-        'imagem': imgSabonete
-    },
-]
-
 
 export default class extends React.Component {
 
@@ -46,10 +20,12 @@ export default class extends React.Component {
         this.onRemover = this.onRemover.bind(this)
         this.onGet = this.onGet.bind(this)
         this.state = {
-            prods: produtos,
+            prods: mercado,
             pedido: false,
             carrinho: [],
             valorTotal: 0,
+            distribuidorId: '',
+            clienteId: '',
         }
     }
 
@@ -62,7 +38,12 @@ export default class extends React.Component {
                 total += p.valorTotal
             })
 
-            this.setState({ carrinho: pdd.data, valorTotal: total })
+            this.setState({ 
+                carrinho: pdd.data, 
+                valorTotal: total,
+                distribuidorId: this.props.match.params.distribuidorId,
+                clienteId: this.props.match.params.clienteId,
+            })
         }).catch(err => {
             console.log(err)
         })
@@ -192,31 +173,31 @@ export default class extends React.Component {
                             Kiosk da Lu
                             <Button primary floated='right' onClick={this.onPedido}>Meu carrinho</Button>
                         </Header>
-                        {this.state.prods.map(p => (
-                            <Card key={p.id}>
-                                <Image src={p.imagem} />
-                                <Card.Content>
-                                <Card.Header>
-                                    {p.nome}
-                                    <small style={{ padding: 10 }}>R$ {p.valor},00</small>
-                                </Card.Header>
-                                <Card.Description>
-                                <p>Descrição: {p.descricao}</p>                            
-                                <div style={{ marginBottom: 10, float: 'right' }}>
-                                    <Button circular color='blue' icon='shopping cart' onClick={() => this.onCadastrar(p)}> 
-                                        <Icon name='shopping cart' /> Add 
-                                    </Button>
-                                </div>
-                                <Button.Group>
-                                    <Button basic color='blue' icon='minus' onClick={() => this.onMenos(p.id)}/>
-                                    <Button basic color='blue'>{p.quantidade}</Button>
-                                    <Button basic color='blue' icon='plus'onClick={() => this.onMais(p.id)}/>
-                                </Button.Group>
-                            
-                                </Card.Description>
-                                </Card.Content>
-                            </Card>
-                        ))}
+                                {this.state.prods.map(p => (
+                                    <Card key={p.id}>
+                                        <Image src={p.imagem} />
+                                        <Card.Content>
+                                        <Card.Header>
+                                            {p.nome}
+                                            <small style={{ padding: 10 }}>R$ {p.valor},00</small>
+                                        </Card.Header>
+                                        <Card.Description>
+                                        <p>Descrição: {p.descricao}</p>                            
+                                        <div style={{ marginBottom: 10, float: 'right' }}>
+                                            <Button circular color='blue' icon='shopping cart' onClick={() => this.onCadastrar(p)}> 
+                                                <Icon name='shopping cart' /> Add 
+                                            </Button>
+                                        </div>
+                                        <Button.Group>
+                                            <Button basic color='blue' icon='minus' onClick={() => this.onMenos(p.id)}/>
+                                            <Button basic color='blue'>{p.quantidade}</Button>
+                                            <Button basic color='blue' icon='plus'onClick={() => this.onMais(p.id)}/>
+                                        </Button.Group>
+                                    
+                                        </Card.Description>
+                                        </Card.Content>
+                                    </Card>
+                                ))}
                     </Container>
                 )}
             </div>
