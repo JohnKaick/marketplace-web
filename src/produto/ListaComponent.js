@@ -1,13 +1,14 @@
 import React from 'react';
 import { Card, Icon, Image, Button, Container, Header, List } from 'semantic-ui-react';
 import { withRouter } from 'react-router-dom'
-import { create, getAll, remover } from '../app/api'
+import { addCarrinho, getAll, remover } from '../app/api'
 
-import { mercado } from './produtos';
-import imgCapa from '../img/capa.jpg';
+import { mercado, farmacia } from './produtos';
 import imgAgua from '../img/agua.jpeg';
-import imgMaca from '../img/maca.jpeg';
+import imgBanana from '../img/banana.png';
 import imgSabonete from '../img/sabonete.jpg';
+import MercadoComponent from './MercadoComponent';
+import FarmaciaComponent from './FarmaciaComponent';
 
 export default class extends React.Component {
 
@@ -20,7 +21,7 @@ export default class extends React.Component {
         this.onRemover = this.onRemover.bind(this)
         this.onGet = this.onGet.bind(this)
         this.state = {
-            prods: mercado,
+            prods: [],
             pedido: false,
             carrinho: [],
             valorTotal: 0,
@@ -30,23 +31,24 @@ export default class extends React.Component {
     }
 
     componentDidMount() {
-        getAll().then((pdd) => {
-            let pdds = pdd.data
-            let total = 0
+        let distribuidorId = this.props.match.params.distribuidorId
+        let clienteId = this.props.match.params.clienteId
 
-            pdds.forEach(p => {
-                total += p.valorTotal
+        if (distribuidorId == 1) {
+            this.setState({
+                prods: mercado,
+                clienteId: clienteId,
+                distribuidorId: distribuidorId
             })
+        }
 
-            this.setState({ 
-                carrinho: pdd.data, 
-                valorTotal: total,
-                distribuidorId: this.props.match.params.distribuidorId,
-                clienteId: this.props.match.params.clienteId,
+        if (distribuidorId >= 2) {
+            this.setState({
+                prods: farmacia,
+                clienteId: clienteId,
+                distribuidorId: distribuidorId
             })
-        }).catch(err => {
-            console.log(err)
-        })
+        }
     }
 
     onMais (id) {
@@ -82,7 +84,7 @@ export default class extends React.Component {
     }
 
     onCadastrar(prd) {
-        create(prd).then(() => {
+        addCarrinho(prd, this.state.distribuidorId, this.state.clienteId).then(() => {
             console.log('pedido realizado')
         })
     }
@@ -132,7 +134,7 @@ export default class extends React.Component {
     render() {
         return (
             <div>
-                {this.state.pedido ? (
+                { this.state.pedido ? (
                     <Container>
                         <Header as='h2' style={{ padding: 10 }}>
                             <Button primary circular size='medium' floated='left' icon='angle left' onClick={this.onPedido} />
@@ -145,7 +147,7 @@ export default class extends React.Component {
                                         <Button circular basic icon='cancel' color='red' floated='right' onClick={() => this.onRemover(p.id)}/>
                                     </div>
                                     {p.id === 1 && (<Image avatar src={imgAgua} />)}
-                                    {p.id === 2 && (<Image avatar src={imgMaca} />)}
+                                    {p.id === 2 && (<Image avatar src={imgBanana} />)}
                                     {p.id === 3 && (<Image avatar src={imgSabonete} />)}
                                 <List.Content>
                                     <List.Header>
@@ -167,38 +169,27 @@ export default class extends React.Component {
                         </Header>
                     </Container>
                 ) : (
-                    <Container>
-                        <Image src={imgCapa} fluid />
-                        <Header as='h2'>
-                            Kiosk da Lu
-                            <Button primary floated='right' onClick={this.onPedido}>Meu carrinho</Button>
-                        </Header>
-                                {this.state.prods.map(p => (
-                                    <Card key={p.id}>
-                                        <Image src={p.imagem} />
-                                        <Card.Content>
-                                        <Card.Header>
-                                            {p.nome}
-                                            <small style={{ padding: 10 }}>R$ {p.valor},00</small>
-                                        </Card.Header>
-                                        <Card.Description>
-                                        <p>Descrição: {p.descricao}</p>                            
-                                        <div style={{ marginBottom: 10, float: 'right' }}>
-                                            <Button circular color='blue' icon='shopping cart' onClick={() => this.onCadastrar(p)}> 
-                                                <Icon name='shopping cart' /> Add 
-                                            </Button>
-                                        </div>
-                                        <Button.Group>
-                                            <Button basic color='blue' icon='minus' onClick={() => this.onMenos(p.id)}/>
-                                            <Button basic color='blue'>{p.quantidade}</Button>
-                                            <Button basic color='blue' icon='plus'onClick={() => this.onMais(p.id)}/>
-                                        </Button.Group>
-                                    
-                                        </Card.Description>
-                                        </Card.Content>
-                                    </Card>
-                                ))}
-                    </Container>
+                    <div>
+                        { this.state.distribuidorId == 1 ? (
+                            <MercadoComponent
+                            {...this.props}
+                            {...this.state}
+                                onCadastrar={this.onCadastrar}
+                                onMais={this.onMais}
+                                onMenos={this.onMenos}
+                                onPedido={this.onPedido}
+                            />
+                        ) : (
+                            <FarmaciaComponent
+                                {...this.props}
+                                {...this.state}
+                                onCadastrar={this.onCadastrar}
+                                onMais={this.onMais}
+                                onMenos={this.onMenos}
+                                onPedido={this.onPedido}
+                            />
+                        )}
+                    </div>
                 )}
             </div>
         )
