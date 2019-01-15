@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Icon, Image, Button, Container, Header } from 'semantic-ui-react';
+import { Item, Icon, Image, Button, Container, Header } from 'semantic-ui-react';
 
 import ModalConfirmar from './ConfirmaComponent'
 import imgCapa from '../img/capa_drogaria.jpg';
@@ -20,33 +20,37 @@ export default props => (
         <br />
         <Container>
             <Header as='h3'>Produtos</Header>
-            {props.prods.map(p => (
-                <Card key={p.id}>
-                    <Image src={p.imagem} />
-                    <Card.Content>
-                    <Card.Header>
-                        {p.nome}
-                        <small style={{ padding: 10 }}>R$ {p.valor},00</small>
-                    </Card.Header>
-                    <Card.Description>
-                    <p>Descrição: {p.descricao}</p>                            
-                    <div style={{ marginBottom: 10, float: 'right' }}>
-                        <ModalConfirmar onCarrinho={props.onCarrinho} >
-                            <Button circular color='blue' icon='shopping cart' onClick={() => props.onCadastrar(p)}> 
-                                <Icon name='shopping cart' /> Add 
-                            </Button>
-                        </ModalConfirmar>
-                    </div>
-                    <Button.Group>
-                        <Button basic color='blue' icon='minus' onClick={() => props.onMenos(p.id)}/>
-                        <Button basic color='blue'>{p.quantidade}</Button>
-                        <Button basic color='blue' icon='plus'onClick={() => props.onMais(p.id)}/>
-                    </Button.Group>
-                
-                    </Card.Description>
-                    </Card.Content>
-                </Card>
-            ))}
+            <Item.Group divided unstackable>
+                {props.prods.map(p => (
+                    <Item>
+                        <Item.Content>
+                        <Item.Image size='tiny' src={p.imagem} />
+                            <Item.Header style={{ padding: 10 }}>
+                                {p.nome}
+                                <br />
+                                <small>R$ {p.valor},00</small>
+                            </Item.Header>
+                            <Item.Description>
+                                <p>{p.descricao}</p>   
+                            </Item.Description>
+                            <Item.Extra>
+                                <div style={{ marginBottom: 10, float: 'right' }}>
+                                    <ModalConfirmar onCarrinho={props.onCarrinho} >
+                                        <Button circular color='blue' icon='shopping cart' onClick={() => props.onCadastrar(p)}> 
+                                            <Icon name='shopping cart' /> Add 
+                                        </Button>
+                                    </ModalConfirmar>
+                                </div>
+                                <Button.Group>
+                                    <Button basic color='blue' icon='minus' onClick={() => props.onMenos(p.id)}/>
+                                    <Button basic color='blue'>{p.quantidade}</Button>
+                                    <Button basic color='blue' icon='plus'onClick={() => props.onMais(p.id)}/>
+                                </Button.Group>
+                            </Item.Extra>
+                        </Item.Content>
+                    </Item>
+                ))}
+            </Item.Group>
         </Container>
     </div>
 )
