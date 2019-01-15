@@ -12,10 +12,31 @@ export function addCarrinho(data, distribuidorId, clienteId) {
     })
 }
 
-export function getAll() {
-    return axios.get('http://apigreen.jkapp.com.br/api/carrinho/listar')
+export function getCarrinho(distribuidorId, clienteId) {
+    return axios.get('http://apigreen.jkapp.com.br/api/carrinho/listar/' + distribuidorId + '/' + clienteId)
 }
 
-export function remover(id) {
-    return axios.delete('http://apigreen.jkapp.com.br/api/carrinho/remover/' + id)
+export function delCarrinho(id, distribuidorId, clienteId) {
+    return axios.post('http://apigreen.jkapp.com.br/api/carrinho/remover', {
+        id, distribuidorId, clienteId
+    })
+}
+
+export function addPedido(distribuidorId, clienteId) {
+    return axios.put('http://apigreen.jkapp.com.br/api/pedido/cadastrar', {
+        distribuidorId, 
+        clienteId 
+    })
+}
+
+export function getPedido(distribuidorId) {
+    return axios.get('http://apigreen.jkapp.com.br/api/pedido/listar/' + distribuidorId)
+}
+
+export function getPedidoDetalhe(id) {
+    return axios.get('http://apigreen.jkapp.com.br/api/pedido/listar/detalhe/' + id)
+}
+
+export function delPedido(id) {
+    return axios.delete('http://apigreen.jkapp.com.br/api/pedido/remover/' + id)
 }
