@@ -1,14 +1,8 @@
 import React from 'react';
 import { Image, Button, Container, Header, List } from 'semantic-ui-react';
 import { withRouter } from 'react-router-dom';
-
-import { getPedidoDetalhe, delPedido } from '../app/api';
-import imgAgua from '../img/agua.jpeg';
-import imgBanana from '../img/banana.png';
-import imgArroz from '../img/arroz.jpg';
-import imgSabonete from '../img/sabonete.jpg';
-import imgDipirona from '../img/dipirona.jpg';
-import imgShampoo from '../img/shampoo.jpg';
+import { getPedidoDetalhe, delPedido } from './api';
+import { urlStorage } from './../app/api'
 
 class CarrinhoComponent extends React.Component {
 
@@ -18,9 +12,9 @@ class CarrinhoComponent extends React.Component {
         this.onFinalizar = this.onFinalizar.bind(this)
         this.state = {
             produtos: [],
-            valorTotal: 0,
-            id: '',
-            distribuidorId: 0,
+            valorTotal: null,
+            id: null,
+            distribuidorId: null,
         }
     }
     
@@ -29,8 +23,8 @@ class CarrinhoComponent extends React.Component {
 
         this.setState({ distribuidorId, id })
 
-        getPedidoDetalhe(id).then((pdd) => {
-            this.setState({ produtos: pdd.data.produtos })
+        getPedidoDetalhe(id).then((res) => {
+            this.setState({ produtos: res.data.produtos })
         }).catch(err => {
             console.log(err)
         })
@@ -49,21 +43,17 @@ class CarrinhoComponent extends React.Component {
     }
 
     render() {
+        const { produtos } = this.state
         return (
             <Container>
                 <Header as='h2' style={{ padding: 10 }}>
                     <Button circular primary size='medium' floated='left' icon='angle left' onClick={this.onPedido} />
                     Produtos
                 </Header>
-                {(this.state.produtos || []).map(p => (
+                {(produtos || []).map(p => (
                     <List>
                         <List.Item>
-                            {p.id === 1 && (<Image avatar src={imgAgua} />)}
-                            {p.id === 2 && (<Image avatar src={imgBanana} />)}
-                            {p.id === 3 && (<Image avatar src={imgArroz} />)}
-                            {p.id === 4 && (<Image avatar src={imgSabonete} />)}
-                            {p.id === 5 && (<Image avatar src={imgDipirona} />)}
-                            {p.id === 6 && (<Image avatar src={imgShampoo} />)}
+                        <Image avatar src={p.imagemPath ? `${urlStorage}/${p.imagemPath}` : 'https://react.semantic-ui.com/images/wireframe/square-image.png'} />
                         <List.Content>
                             <List.Header>
                             {p.nome}
@@ -72,7 +62,13 @@ class CarrinhoComponent extends React.Component {
                                 <p>
                                     Quantidade: {p.quantidade}
                                     <br />
-                                    Valor: R$ {p.valorTotal},00
+                                    Valor: R$ {p.valorTotal}
+                                    <br />
+                                    {p.observacao && (
+                                        <div>
+                                            OBS: {p.observacao}
+                                        </div>
+                                    )}
                                 </p>
                             </List.Description>
                         </List.Content>
